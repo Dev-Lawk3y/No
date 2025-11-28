@@ -6,28 +6,28 @@ module.exports = {
     name: "developer",
     aliases: ["dev"],
     version: "1.0",
-    author: "NTKhang | Saimx69x",
+    author: "NTKhang | Christus",
     role: 0,
     description: {
-      en: "Add, remove, list developer role users"
+      fr: "Ajouter, supprimer ou lister les utilisateurs avec rôle développeur"
     },
-    category: "developer",
+    category: "développeur",
     guide: {
-      en: '   {pn} [add | -a] <uid | @tag>: Add developer\n'
-        + '   {pn} [remove | -r] <uid | @tag>: Remove developer\n'
-        + '   {pn} [list | -l]: List all developers'
+      fr: '   {pn} [add | -a] <uid | @tag> : Ajouter un développeur\n'
+        + '   {pn} [remove | -r] <uid | @tag> : Supprimer un développeur\n'
+        + '   {pn} [list | -l] : Lister tous les développeurs'
     }
   },
 
   langs: {
-    en: {
-      added: "✅ | Added developer role for %1 users:\n%2",
-      alreadyDev: "⚠️ | %1 users are already developers:\n%2",
-      missingIdAdd: "⚠️ | Please enter ID or tag user to add developer",
-      removed: "✅ | Removed developer role of %1 users:\n%2",
-      notDev: "⚠️ | %1 users are not developers:\n%2",
-      missingIdRemove: "⚠️ | Please enter ID or tag user to remove developer",
-      listDev: "👨‍💻 | List of developers:\n%1"
+    fr: {
+      added: "✅ | Rôle développeur ajouté pour %1 utilisateurs :\n%2",
+      alreadyDev: "⚠️ | %1 utilisateurs sont déjà développeurs :\n%2",
+      missingIdAdd: "⚠️ | Veuillez entrer l'ID ou mentionner un utilisateur pour ajouter un développeur",
+      removed: "✅ | Rôle développeur retiré pour %1 utilisateurs :\n%2",
+      notDev: "⚠️ | %1 utilisateurs ne sont pas développeurs :\n%2",
+      missingIdRemove: "⚠️ | Veuillez entrer l'ID ou mentionner un utilisateur pour retirer un développeur",
+      listDev: "👨‍💻 | Liste des développeurs :\n%1"
     }
   },
 
@@ -38,7 +38,7 @@ module.exports = {
     switch (args[0]) {
       case "add":
       case "-a": {
-        if (role < 4) return message.reply("⚠️ | Only main developers can add new developers.");
+        if (role < 4) return message.reply("⚠️ | Seuls les développeurs principaux peuvent ajouter de nouveaux développeurs.");
 
         if (args[1]) {
           let uids = [];
@@ -72,7 +72,7 @@ module.exports = {
 
       case "remove":
       case "-r": {
-        if (role < 4) return message.reply("⚠️ | Only main developers can remove developers.");
+        if (role < 4) return message.reply("⚠️ | Seuls les développeurs principaux peuvent retirer des développeurs.");
 
         if (args[1]) {
           let uids = [];
@@ -107,7 +107,7 @@ module.exports = {
       case "list":
       case "-l": {
         if (config.developer.length === 0)
-          return message.reply("⚠️ | No developers found");
+          return message.reply("⚠️ | Aucun développeur trouvé");
         const getNames = await Promise.all(config.developer.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
         return message.reply(getLang("listDev", getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")));
       }
