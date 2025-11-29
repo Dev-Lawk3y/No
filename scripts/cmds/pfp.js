@@ -8,11 +8,11 @@ module.exports = {
     author: "Saimx69x",
     countDown: 5,
     role: 0,
-    shortDescription: "Show user's profile picture",
-    longDescription: "View profile picture of yourself, a tagged user, replied user, or a specific UID.",
+    shortDescription: "Afficher la photo de profil de l'utilisateur",
+    longDescription: "Voir la photo de profil de vous-même, d'un utilisateur tagué, d'un utilisateur répondu ou d'un UID spécifique.",
     category: "image",
     guide: {
-      en: "{pn} [@tag | reply | uid] — Show profile picture"
+      en: "{pn} [@tag | reply | uid] — Afficher la photo de profil"
     }
   },
 
@@ -33,17 +33,17 @@ module.exports = {
         targetID = event.senderID;
       }
 
-      const name = await usersData.getName(targetID).catch(() => "Unknown User");
+      const name = await usersData.getName(targetID).catch(() => "Utilisateur inconnu");
       const avatarURL = await usersData.getAvatarUrl(targetID);
 
       return message.reply({
-        body: `🖼️ 𝑷𝒓𝒐𝒇𝒊𝒍𝒆 𝑷𝒊𝒄𝒕𝒖𝒓𝒆 𝒐𝒇\n✨️ ${name} (${targetID})`,
+        body: `🖼️ 𝑷𝒉𝒐𝒕𝒐 𝒅𝒆 𝒑𝒓𝒐𝒇𝒊𝒍 𝒅𝒆\n✨️ ${name} (${targetID})`,
         attachment: await global.utils.getStreamFromURL(avatarURL)
       });
 
     } catch (err) {
       console.error(err);
-      return message.reply("❌ Could not fetch the profile picture. Maybe UID is invalid or privacy blocked.");
+      return message.reply("❌ Impossible de récupérer la photo de profil. Peut-être que l’UID est invalide ou bloqué par la confidentialité.");
     }
   }
 };
