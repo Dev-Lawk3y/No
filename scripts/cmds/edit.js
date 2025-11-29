@@ -6,13 +6,13 @@ module.exports = {
   config: {
     name: "edit",
     version: "1.0",
-    author: "Saimx69x | API Renz",
+    author: "Christus",
     countDown: 5,
     role: 0,
-    shortDescription: "Edit image using FluxKontext API",
-    longDescription: "Edit an uploaded image based on your prompt using FluxKontext API.",
+    shortDescription: "Modifier une image via l'API FluxKontext",
+    longDescription: "Édite une image uploadée selon votre prompt en utilisant l'API FluxKontext.",
     category: "ai-image-edit",
-    guide: "{p}edit [prompt] (reply to image)"
+    guide: "{p}edit [prompt] (répondre à une image)"
   },
 
   onStart: async function ({ api, event, args, message }) {
@@ -21,17 +21,17 @@ module.exports = {
 
     if (!repliedImage || repliedImage.type !== "photo") {
       return message.reply(
-        "⚠️ Please reply to a photo **and** provide a prompt to edit it.\nExample: /edit Make it cartoon style"
+        "⚠️ Veuillez répondre à une photo **et** fournir un prompt pour la modifier.\nExemple : /edit Transforme-la en style cartoon"
       );
     }
 
     if (!prompt) {
       return message.reply(
-        "⚠️ Please provide a prompt to edit the image.\nExample: /edit Make it cartoon style"
+        "⚠️ Veuillez fournir un prompt pour modifier l'image.\nExemple : /edit Transforme-la en style cartoon"
       );
     }
 
-    const processingMsg = await message.reply("⏳ Processing your image...");
+    const processingMsg = await message.reply("⏳ Traitement de votre image en cours...");
 
     const imgPath = path.join(__dirname, "cache", `${Date.now()}_edit.jpg`);
 
@@ -46,14 +46,14 @@ module.exports = {
 
       await api.unsendMessage(processingMsg.messageID);
       message.reply({
-        body: `✅ Edited image for: "${prompt}"`,
+        body: `✅ Image modifiée selon : "${prompt}"`,
         attachment: fs.createReadStream(imgPath)
       });
 
     } catch (err) {
-      console.error("EDIT Error:", err);
+      console.error("Erreur EDIT :", err);
       await api.unsendMessage(processingMsg.messageID);
-      message.reply("❌ Failed to edit image. Please try again later.");
+      message.reply("❌ Impossible de modifier l'image. Veuillez réessayer plus tard.");
     } finally {
       if (fs.existsSync(imgPath)) {
         await fs.remove(imgPath);
