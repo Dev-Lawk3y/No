@@ -49,7 +49,7 @@ module.exports = {
 
       const botName = (global.GoatBot && global.GoatBot.config && global.GoatBot.config.nickNameBot) || "MyBot";
       const prefix = (global.GoatBot && global.GoatBot.config && global.GoatBot.config.prefix) || "/";
-      const adminName = "Christus";
+      const adminName = "Lawkey Marvelous";
 
       const allUsers = (usersData && typeof usersData.getAll === "function") ? await usersData.getAll() : [];
       const allThreads = (threadsData && typeof threadsData.getAll === "function") ? await threadsData.getAll() : [];
