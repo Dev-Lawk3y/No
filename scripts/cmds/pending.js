@@ -3,10 +3,10 @@ const fs = require("fs-extra");
 const path = require("path");
 
 const ownerInfo = {
-  name: "𝐶𝐻𝑅𝐼𝑆𝑇𝑈𝑆",
-  facebook: "https://www.facebook.com/Anos.Christus",
-  telegram: "ᏉᎾᏆᎧ ᎿᎬᏁ",
-  supportGroup: "🌚🌚⚡"
+  name: "𐐛ɑ𝑤𝚔𝖊𝑦 Ꮇɑ𝔯v𝖊𝘭օ𝗎𝓼",
+  facebook: "https://www.facebook.com/61579965157498",
+  instagram: "sadlawkey",
+  supportGroup: "÷💔•💔÷NZR SUPPORT GC÷💔•💔÷"
 };
 
 module.exports = {
@@ -137,7 +137,7 @@ module.exports = {
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
             `👑 Propriétaire: ${ownerInfo.name}`,
             `🌐 Facebook: ${ownerInfo.facebook}`,
-            `✈️ Telegram: ${ownerInfo.telegram}`,
+            `✈️ Instagram: ${ownerInfo.instagram}`,
             `🤖 Support GC: ${ownerInfo.supportGroup}`
           ].join("\n");
           api.sendMessage(fallbackMsg, targetThread);
