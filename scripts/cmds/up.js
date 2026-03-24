@@ -5,7 +5,7 @@ module.exports = {
     name: "up",
     aliases: ["upt", "uptime", "rtm"],
     version: "1.9.9",
-    author: "Christus",
+    author: "Lawkey Marvelous",
     usePrefix: false,
     role: 0,
     shortDescription: { en: "uptime stats" },
@@ -98,7 +98,7 @@ module.exports = {
 
       const finalMessage = `
 ┌────────────────────┐
-│ ⚡ 𝙔𝙊𝙐𝙍 𝘽𝙊𝙏 𝙐𝙋𝙏𝙄𝙈𝙀 ⚡  │
+│ ⚡ ༒︎🝮︎︎☠︎︎𝕃𝕖𝕘𝕖𝕟𝕕☠︎︎🝮︎︎༒ 𝘽𝙊𝙏 𝙐𝙋𝙏𝙄𝙈𝙀 ⚡  │
 ├────────────────────┤
 │ 🤖 Bot: ${botName}    
 │ 🗝️ Prefix: ${prefix}     
