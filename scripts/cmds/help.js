@@ -72,7 +72,7 @@ module.exports = {
 
       // --- Command List ---
       if(!args || args.length === 0) {
-        let body = "📚 𝐺𝑂𝐴𝑇 𝐵𝑂𝑇 𝐶𝑂𝑀𝑀𝐴𝑁𝐷𝑆\n\n";
+        let body = "📚 ༒︎🝮︎︎☠︎︎𝕃𝕖𝕘𝕖𝕟𝕕☠︎︎🝮︎︎༒ 𝐶𝑂𝑀𝑀𝐴𝑁𝐷𝑆\n\n";
         const categories = {};
         for(let [name, cmd] of commands) {
           const cat = cmd.config.category || "Misc";
@@ -82,7 +82,7 @@ module.exports = {
 
         for(const cat of Object.keys(categories).sort()) {
           const list = categories[cat].sort().map(c=>`• ${toAZStyle(c)}`).join("  ");
-          body += `🍓 ${cat}\n${list || "𝐍𝐨 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬"}\n\n`;
+          body += `😑 ${cat}\n${list || "𝐍𝐨 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬"}\n\n`;
         }
 
         body += `📊 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬: ${commands.size}\n`;
