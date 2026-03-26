@@ -1,134 +1,153 @@
-const os = require("os");
+const { GoatWrapper } = require('fca-liane-utils');
+const fs = require("fs-extra");
+const axios = require("axios");
+const moment = require("moment-timezone");
+const os = require('os');
+const util = require('util');
+const { createCanvas } = require('canvas');
+const GIFEncoder = require('gifencoder');
+
+// 🌐 Manila Time
+const manilaTime = moment.tz('Asia/Manila');
+
+// 🌀 Spinner Frames
+const spinner = [
+  '⋘ 𝑃𝑙𝑒𝑎𝑠𝑒 𝑤𝑎𝑖𝑡... ⋙',
+  '⋘ 𝑙𝑜𝑎𝑑𝑖𝑛𝑔 𝑑𝑎𝑡𝑎... ⋙',
+  '█▒▒▒▒▒▒▒▒▒10%',
+  '████▒▒▒▒▒▒30%',
+  '█████▒▒▒▒▒50%',
+  '████████▒▒80%',
+  '██████████100%'
+];
 
 module.exports = {
   config: {
-    name: "up",
-    aliases: ["upt", "uptime", "rtm"],
-    version: "1.9.9",
-    author: "Lawkey Marvelous",
-    usePrefix: false,
+    name: "uptimett",
+    aliases: ["uptt", "Uptimett", "u", "up"],
+    version: "1.8",
+    author: "Kylepogi",
+    countDown: 5,
     role: 0,
-    shortDescription: { en: "uptime stats" },
-    longDescription: {
-      en: "uptime information"
-    },
-    category: "system",
-    guide: { en: "{p}uptime" }
+    description: { en: "Bot ping monitor" },
+    category: "𝗨𝗽𝘁𝗶𝗺𝗲 𝗥𝗼𝗯𝗼𝘁",
+    guide: { en: "{pn}up" }
   },
 
-  onStart: async function ({ api, event, config, usersData, threadsData }) {
-    const delay = ms => new Promise(res => setTimeout(res, ms));
-    const loadStages = [
-      "🌑 [░░░░░░░░░░░░░░] 0%",
-      "🌒 [▓▓▓▓░░░░░░░░░░] 25%",
-      "🌓 [▓▓▓▓▓▓▓▓░░░░░░] 50%",
-      "🌔 [▓▓▓▓▓▓▓▓▓▓▓▓░░] 75%",
-      "🌕 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%"
-    ];
+  onStart: async function ({ message, api, event }) {
+    const uptime = process.uptime();
+    const formattedUptime = formatMilliseconds(uptime * 1000);
+
+    const totalMemory = os.totalmem();
+    const freeMemory = os.freemem();
+    const usedMemory = totalMemory - freeMemory;
+    const cpu = os.cpus()[0];
+    const speed = cpu.speed;
+    const totalMem = totalMemory / (1024 ** 3);
+    const usedMem = usedMemory / (1024 ** 3);
+    const currentTime = manilaTime.format('MMMM D, YYYY h:mm A');
+    const serverUptimeString = formatUptime(os.uptime());
+
+    // 🎞️ Create GIF
+    const encoder = new GIFEncoder(400, 300);
+    const gifPath = './uptime.gif';
+    const stream = fs.createWriteStream(gifPath);
+
+    encoder.createReadStream().pipe(stream);
+    encoder.start();
+    encoder.setRepeat(0);
+    encoder.setDelay(1000);
+    encoder.setQuality(10);
+
+    const canvas = createCanvas(400, 300);
+    const ctx = canvas.getContext('2d');
+
+    const bgColors = ['#ffffff', '#ffcccc', '#ccffcc', '#ccccff'];
+    const textColors = ['#000000', '#ff0000', '#00ff00', '#0000ff'];
+
+    for (let i = 0; i < bgColors.length; i++) {
+      ctx.fillStyle = bgColors[i];
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = textColors[i];
+      ctx.font = '16px impact';
+      ctx.fillText('LawkeyandNZR Bot Uptime:', 10, 30);
+      ctx.fillText(formattedUptime, 10, 60);
+      ctx.fillText('Server Uptime:', 10, 90);
+      ctx.fillText(serverUptimeString, 10, 120);
+      ctx.fillText('CPU Speed:', 10, 150);
+      ctx.fillText(`${speed} MHz`, 10, 180);
+      ctx.fillText('Memory Usage:', 10, 210);
+      ctx.fillText(`Used: ${usedMem.toFixed(2)} GB / Total: ${totalMem.toFixed(2)} GB`, 10, 240);
+      ctx.fillText('Current Time in Manila:', 10, 270);
+      ctx.fillText(currentTime, 10, 290);
+
+      encoder.addFrame(ctx);
+    }
+
+    encoder.finish();
+
+    // 📶 Bot Ping
+    const start = Date.now();
+    await axios.get('https://google.com');
+    const BotPing = Date.now() - start;
+
+    // 🕒 Spinner Animation
+    const loadingMessage = await message.reply(`[📡] 𝗨𝗽𝘁𝗶𝗺𝗲 𝗦𝘆𝘀𝘁𝗲𝗺:\n\n${spinner[0]} Checking uptime, please wait...`);
+
+    let currentFrame = 0;
+    const intervalId = setInterval(async () => {
+      currentFrame = (currentFrame + 1) % spinner.length;
+      try {
+        await api.editMessage(
+          `[📡] 𝗨𝗽𝘁𝗶𝗺𝗲 𝗦𝘆𝘀𝘁𝗲𝗺:\n\n${spinner[currentFrame]} Checking, please wait...`,
+          loadingMessage.messageID
+        );
+      } catch (err) {
+        console.error("Edit message failed:", err.message);
+      }
+    }, 5000);
+
+    await new Promise(resolve => setTimeout(resolve, 710000)); // 7.1 sec for display
+    clearInterval(intervalId);
 
     try {
-      const loading = await api.sendMessage("🚀 Initializing Uptime Statistics...\n" + loadStages[0], event.threadID);
-
-      for (let i = 1; i < loadStages.length; i++) {
-        await delay(300);
-        await api.editMessage(`🚀 Initializing Uptime Statistics...\n${loadStages[i]}`, loading.messageID, event.threadID);
-      }
-
-      const memoryUsage = (process.memoryUsage().rss / 1024 / 1024).toFixed(2);
-      const totalMemory = (os.totalmem() / 1024 / 1024).toFixed(2);
-      const freeMemory = (os.freemem() / 1024 / 1024).toFixed(2);
-      const memoryUsagePercent = ((memoryUsage / totalMemory) * 100).toFixed(2);
-      const cpuModel = os.cpus()[0].model.split('@')[0].trim();
-      const cpuSpeed = (os.cpus()[0].speed / 1000).toFixed(1);
-      const cpuCores = os.cpus().length;
-      const platform = os.platform();
-      const osType = os.type();
-      const osRelease = os.release();
-      const osArch = os.arch();
-      const nodeVersion = process.version;
-
-      const botName = (global.GoatBot && global.GoatBot.config && global.GoatBot.config.nickNameBot) || "MyBot";
-      const prefix = (global.GoatBot && global.GoatBot.config && global.GoatBot.config.prefix) || "/";
-      const adminName = "Lawkey Marvelous";
-
-      const allUsers = (usersData && typeof usersData.getAll === "function") ? await usersData.getAll() : [];
-      const allThreads = (threadsData && typeof threadsData.getAll === "function") ? await threadsData.getAll() : [];
-
-      const uptime = process.uptime();
-      const days = Math.floor(uptime / 86400);
-      const hours = Math.floor((uptime % 86400) / 3600);
-      const minutes = Math.floor((uptime % 3600) / 60);
-      const seconds = Math.floor(uptime % 60);
-      const uptimeFormatted = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-      const systemUptime = os.uptime();
-      const sysDays = Math.floor(systemUptime / 86400);
-      const sysHours = Math.floor((systemUptime % 86400) / 3600);
-      const sysMinutes = Math.floor((systemUptime % 3600) / 60);
-      const sysUptimeFormatted = `${sysDays}d ${sysHours}h ${sysMinutes}m`;
-
-      const now = new Date();
-      const date = now.toLocaleDateString("en-US", {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        timeZone: "Asia/Dhaka"
-      });
-
-      const time = now.toLocaleTimeString("en-US", {
-        hour12: true,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZone: "Asia/Dhaka"
-      });
-
-      const networkInterfaces = os.networkInterfaces();
-      let ipAddress = "Not Available";
-      for (const interfaceName in networkInterfaces) {
-        const interfaces = networkInterfaces[interfaceName];
-        for (const iface of interfaces) {
-          if (!iface.internal && iface.family === 'IPv4') {
-            ipAddress = iface.address;
-            break;
-          }
-        }
-      }
-
-      const finalMessage = `
-┌────────────────────┐
-│ ⚡ ༒︎🝮︎︎☠︎︎𝕃𝕖𝕘𝕖𝕟𝕕☠︎︎🝮︎︎༒ 𝘽𝙊𝙏 𝙐𝙋𝙏𝙄𝙈𝙀 ⚡  │
-├────────────────────┤
-│ 🤖 Bot: ${botName}    
-│ 🗝️ Prefix: ${prefix}     
-│ 👑 Admin: ${adminName}  
-├────────────────────┤
-│ 👥 Members: ${allUsers.length.toLocaleString()}
-│ 📂 Groups: ${allThreads.length.toLocaleString()}  
-├────────────────────┤
-│ ⏳ Uptime: ${uptimeFormatted} 
-│ 🖥️ Sys Up: ${sysUptimeFormatted}     
-│ 📅 Date: ${date}      
-│ 🕓 Time: ${time}      
-├────────────────────┤
-│ 💽 Mem: ${memoryUsage}MB / ${totalMemory}MB (${memoryUsagePercent}%)  
-│ 🆓 Free: ${freeMemory}MB  
-│ 🖥 OS: ${platform} ${osArch} ${osRelease} 
-│ 📦 Node: ${nodeVersion} 
-├────────────────────┤
-│ 🛠 CPU: ${cpuModel}   
-│ ⚙️ Cores: ${cpuCores} @ ${cpuSpeed}GHz
-│ 🌍 IP: ${ipAddress}  
-└────────────────────┘
-`.trim();
-
-      await delay(500);
-      await api.editMessage(finalMessage, loading.messageID, event.threadID);
-
+      await api.unsendMessage(loadingMessage.messageID);
     } catch (err) {
-      console.error("Uptime error:", err);
-      await api.sendMessage("❌ An error occurred while fetching uptime statistics. Please try again later.", event.threadID);
+      console.warn("Failed to unsend spinner message:", err.message);
     }
+
+    // 📤 Send Final Uptime Info
+    return message.reply({
+      body: `
+╭────────────────╮
+      𓃵 LawkeyandNZR 𝗕𝗼𝘁 𝗨𝗽𝘁𝗶𝗺𝗲
+╰────────────────╯
+
+╭────────────❏
+│ ⏳ 𝗨𝗽𝘁𝗶𝗺𝗲: 『${formattedUptime}』
+│ 📡 𝗕𝗼𝘁 𝗣𝗶𝗻𝗴: ${BotPing}ms
+│ 🖥️ 𝗣𝗹𝗮𝘁𝗳𝗼𝗿𝗺: ${os.platform()}
+│ 🛡 𝗢𝗦: ${os.type()} ${os.release()}
+│ 📐 𝗔𝗿𝗰𝗵: ${os.arch()}
+│ 💾 𝗠𝗲𝗺𝗼𝗿𝘆: ${prettyBytes(process.memoryUsage().rss)}
+│ 💽 RAM Usage: ${prettyBytes(usedMemory)} / Total ${prettyBytes(totalMemory)}                            
+│ 🧠 𝗖𝗣𝗨: ${cpu.model} (${os.cpus().length} cores)
+│ 🌐 𝗦𝗲𝗿𝘃𝗲𝗿 𝗨𝗽𝘁𝗶𝗺𝗲: ${serverUptimeString}                                                
+╰────────────────❍`,
+      attachment: fs.createReadStream(gifPath)
+    }, event.threadID);
   }
 };
+
+// 🔄 Wrap command
+const wrapper = new GoatWrapper(module.exports);
+wrapper.applyNoPrefix({ allowPrefix: true });
+
+// 🕒 Format Time Functions
+function formatMilliseconds(ms) {
+  const seconds = Math.floor((ms / 1000) % 60);
+  const minutes = Math.floor((ms / (1000 * 60)) % 60);
+  const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+  return `${days}d ${hours}h ${minutes}m ${sec
